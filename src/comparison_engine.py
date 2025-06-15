@@ -117,8 +117,37 @@ def identify_unique_words(text1: str, text2: str) -> dict:
         "only_in_text2": only_in_text2
     }
 
+def search_keyword(text1: str, text2: str, keyword: str) -> dict:
+    """
+    Recherche un mot-clé dans les deux textes et indique s'il est présent
+    et combien de fois il apparaît (en ignorant la casse).
+
+    :param text1: Premier texte.
+    :param text2: Deuxième texte.
+    :param keyword: Mot-clé à chercher.
+    :return: Dictionnaire avec les informations de présence et de fréquence.
+    """
+    keyword = keyword.lower()
+    words1 = text1.lower().split()
+    words2 = text2.lower().split()
+
+    count1 = words1.count(keyword)
+    count2 = words2.count(keyword)
+
+    return {
+        "text1": {
+            "found": count1 > 0,
+            "count": count1
+        },
+        "text2": {
+            "found": count2 > 0,
+            "count": count2
+        }
+    }
+
 if __name__ == "__main__":
     t1 = "Le chat mange une souris"
     t2 = "Le chien mange une pomme"
-    uniques = identify_unique_words(t1, t2)
-    print("Mots uniques :", uniques)
+    keyword = "mange"
+    result = search_keyword(t1, t2, keyword)
+    print(f"Recherche du mot '{keyword}' :", result)
