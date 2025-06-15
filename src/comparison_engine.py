@@ -145,9 +145,50 @@ def search_keyword(text1: str, text2: str, keyword: str) -> dict:
         }
     }
 
+def compare_documents(text1: str, text2: str, keyword: str) -> dict:
+    """
+    Orchestration globale de la comparaison de documents.
+
+    Utilise :
+    - compare_lines pour comparer ligne à ligne,
+    - compare_words_in_line pour analyser les différences mot à mot dans les lignes différentes,
+    - calculate_similarity_rate pour calculer le taux de similarité,
+    - identify_unique_words pour détecter les mots uniques,
+    - search_keyword pour chercher un mot-clé.
+
+    :param text1: Premier texte.
+    :param text2: Deuxième texte.
+    :param keyword: Mot-clé à chercher.
+    :return: Dictionnaire complet avec tous les résultats.
+    """
+    line_comp = compare_lines(text1, text2)
+
+    # Analyse détaillée mot à mot des lignes différentes
+    word_level_diffs = []
+    for l1, l2 in line_comp['diff']:
+        word_diff = compare_words_in_line(l1, l2)
+        word_level_diffs.append({
+            "line_text1": l1,
+            "line_text2": l2,
+            "word_diff": word_diff
+        })
+
+    similarity = calculate_similarity_rate(text1, text2)
+    uniques = identify_unique_words(text1, text2)
+    keyword_search = search_keyword(text1, text2, keyword)
+
+    return {
+        "line_comparison": line_comp,
+        "word_level_differences": word_level_diffs,
+        "similarity_rate": similarity,
+        "unique_words": uniques,
+        "keyword_search": keyword_search
+    }
+
 if __name__ == "__main__":
     t1 = "Le chat mange une souris"
     t2 = "Le chien mange une pomme"
     keyword = "mange"
-    result = search_keyword(t1, t2, keyword)
-    print(f"Recherche du mot '{keyword}' :", result)
+
+    from pprint import pprint
+    pprint(compare_documents(t1, t2, keyword))
