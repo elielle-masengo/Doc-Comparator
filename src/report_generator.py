@@ -41,13 +41,64 @@ def summarize_line_differences(line_comparison: dict) -> str:
 
     return "\n".join(summary)
 
+def generate_statistics_report(
+        text1: str,
+        text2: str,
+        comparison_result: dict
+    ) -> str:
+    """
+    Génère un résumé des statistiques globales de la comparaison.
+
+    :param text1: Contenu du premier texte.
+    :param text2: Contenu du second texte.
+    :param comparison_result: Dictionnaire retourné par compare_documents.
+    :return: Texte du résumé des statistiques.
+    """
+    stats = []
+
+    # Lignes
+    nb_lignes_text1 = len(text1.splitlines())
+    nb_lignes_text2 = len(text2.splitlines())
+    nb_lignes_communes = len(comparison_result["line_comparison"].get("common", []))
+    nb_lignes_diff = len(comparison_result["line_comparison"].get("diff", []))
+    nb_uniques_1 = len(comparison_result["line_comparison"].get("unique_to_text1", []))
+    nb_uniques_2 = len(comparison_result["line_comparison"].get("unique_to_text2", []))
+
+    stats.append("=== Statistiques sur les lignes ===")
+    stats.append(f"Nombre total de lignes dans le texte 1 : {nb_lignes_text1}")
+    stats.append(f"Nombre total de lignes dans le texte 2 : {nb_lignes_text2}")
+    stats.append(f"Lignes identiques : {nb_lignes_communes}")
+    stats.append(f"Lignes différentes (à la même position) : {nb_lignes_diff}")
+    stats.append(f"Lignes uniquement dans le texte 1 : {nb_uniques_1}")
+    stats.append(f"Lignes uniquement dans le texte 2 : {nb_uniques_2}")
+    stats.append("")
+
+    # Mots
+    nb_mots_text1 = len(text1.split())
+    nb_mots_text2 = len(text2.split())
+
+    stats.append("=== Statistiques sur les mots ===")
+    stats.append(f"Nombre total de mots dans le texte 1 : {nb_mots_text1}")
+    stats.append(f"Nombre total de mots dans le texte 2 : {nb_mots_text2}")
+    stats.append(f"Mots uniquement dans le texte 1 : {len(comparison_result['unique_words'].get('only_in_text1', []))}")
+    stats.append(f"Mots uniquement dans le texte 2 : {len(comparison_result['unique_words'].get('only_in_text2', []))}")
+    stats.append("")
+
+    # Taux de similarité
+    stats.append("=== Taux de similarité ===")
+    stats.append(f"{comparison_result['similarity_rate']} %")
+    stats.append("")
+
+    return "\n".join(stats)
+
 
 if __name__ == "__main__":
-    comparaison_exemple = {
-        'common': ['Ligne A'],
-        'diff': [('Ligne B1', 'Ligne B2')],
-        'unique_to_text1': ['Ligne C1', 'Ligne D1'],
-        'unique_to_text2': ['Ligne C2']
-    }
+    from comparison_engine import compare_documents
 
-    print(summarize_line_differences(comparaison_exemple))
+    t1 = "Bonjour monde\nCeci est une ligne\nTest ligne"
+    t2 = "Bonjour monde\nCeci est une autre ligne\nNouvelle ligne ajoutée"
+    keyword = "ligne"
+
+    result = compare_documents(t1, t2, keyword)
+
+    print(generate_statistics_report(t1, t2, result))
