@@ -1,3 +1,5 @@
+import re
+
 def compare_lines(text1: str, text2: str) -> dict:
     """
     Compare deux textes ligne par ligne.
@@ -120,7 +122,7 @@ def identify_unique_words(text1: str, text2: str) -> dict:
 def search_keyword(text1: str, text2: str, keyword: str) -> dict:
     """
     Recherche un mot-clé dans les deux textes et indique s'il est présent
-    et combien de fois il apparaît (en ignorant la casse).
+    et combien de fois il apparaît (en ignorant la casse et la ponctuation).
 
     :param text1: Premier texte.
     :param text2: Deuxième texte.
@@ -128,8 +130,10 @@ def search_keyword(text1: str, text2: str, keyword: str) -> dict:
     :return: Dictionnaire avec les informations de présence et de fréquence.
     """
     keyword = keyword.lower()
-    words1 = text1.lower().split()
-    words2 = text2.lower().split()
+
+    # On extrait uniquement les mots (sans ponctuation)
+    words1 = re.findall(r'\b\w+\b', text1.lower())
+    words2 = re.findall(r'\b\w+\b', text2.lower())
 
     count1 = words1.count(keyword)
     count2 = words2.count(keyword)
