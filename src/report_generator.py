@@ -112,6 +112,60 @@ def format_keyword_search(keyword: str, result: dict) -> str:
     lines.append("")  # Ligne vide pour séparer proprement
     return "\n".join(lines)
 
+def generate_report(comparison_results: dict) -> str:
+    """
+    Génère un rapport texte structuré à partir des résultats de comparaison.
+
+    :param comparison_results: Dictionnaire retourné par compare_documents.
+    :return: Chaîne de caractères représentant le rapport complet.
+    """
+    lines = []
+
+    lines.append("==== Rapport de comparaison ====\n")
+
+    similarity = comparison_results["similarity_rate"]
+    lines.append(f"Taux de similarité : {similarity:.2f}%\n")
+
+    line_comp = comparison_results["line_comparison"]
+    nb_common = len(line_comp["common"])
+    nb_diff = len(line_comp["diff"])
+    nb_unique1 = len(line_comp["unique_to_text1"])
+    nb_unique2 = len(line_comp["unique_to_text2"])
+    total = nb_common + nb_diff + nb_unique1 + nb_unique2
+
+    lines.append("=== Statistiques des lignes ===")
+    lines.append(f"Total de lignes analysées : {total}")
+    lines.append(f"Lignes identiques         : {nb_common}")
+    lines.append(f"Lignes différentes        : {nb_diff}")
+    lines.append(f"Lignes uniquement dans texte 1 : {nb_unique1}")
+    lines.append(f"Lignes uniquement dans texte 2 : {nb_unique2}\n")
+
+    lines.append("=== Lignes différentes (avec détails mot à mot) ===")
+    for diff in comparison_results["word_level_differences"]:
+        lines.append("- Ligne dans texte 1 : " + diff["line_text1"])
+        lines.append("+ Ligne dans texte 2 : " + diff["line_text2"])
+        word_diff = diff["word_diff"]
+        if word_diff["differences"]:
+            lines.append("  > Mots différents :")
+            for w1, w2 in word_diff["differences"]:
+                lines.append(f"    - {w1}  ≠  {w2}")
+        lines.append("")
+
+    uniques = comparison_results["unique_words"]
+    lines.append("=== Mots uniques ===")
+    lines.append(f"Mots uniques au texte 1 : {', '.join(uniques['only_in_text1']) or 'Aucun'}")
+    lines.append(f"Mots uniques au texte 2 : {', '.join(uniques['only_in_text2']) or 'Aucun'}\n")
+
+    keyword_search = comparison_results["keyword_search"]
+    lines.append("=== Résultat de la recherche du mot-clé ===")
+    lines.append(f"Texte 1 : {'Oui' if keyword_search['text1']['found'] else 'Non'} "
+                 f"({keyword_search['text1']['count']} occurrence(s))")
+    lines.append(f"Texte 2 : {'Oui' if keyword_search['text2']['found'] else 'Non'} "
+                 f"({keyword_search['text2']['count']} occurrence(s))\n")
+
+    lines.append("==== Fin du rapport ====\n")
+    return "\n".join(lines)
+
 
 if __name__ == "__main__":
     from comparison_engine import compare_documents
