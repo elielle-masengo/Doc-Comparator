@@ -91,14 +91,34 @@ def generate_statistics_report(
 
     return "\n".join(stats)
 
+def format_keyword_search(keyword: str, result: dict) -> str:
+    """
+    Affiche les résultats de la recherche d’un mot-clé dans les deux documents.
+
+    :param keyword: Mot-clé recherché.
+    :param result: Dictionnaire retourné par search_keyword ou compare_documents["keyword_search"].
+    :return: Texte formaté contenant les résultats de recherche.
+    """
+    lines = []
+    lines.append("=== Résultats de la recherche du mot-clé ===")
+    lines.append(f"Mot-clé recherché : '{keyword}'")
+    lines.append("")
+
+    for doc, data in result.items():
+        presence = "✔️ Présent" if data["found"] else "❌ Absent"
+        count = data["count"]
+        lines.append(f"- Dans {doc} : {presence}, nombre d’occurrences : {count}")
+    
+    lines.append("")  # Ligne vide pour séparer proprement
+    return "\n".join(lines)
+
 
 if __name__ == "__main__":
     from comparison_engine import compare_documents
 
-    t1 = "Bonjour monde\nCeci est une ligne\nTest ligne"
-    t2 = "Bonjour monde\nCeci est une autre ligne\nNouvelle ligne ajoutée"
-    keyword = "ligne"
+    t1 = "Bonjour à tous. Voici un test de mot-clé. Test encore une fois."
+    t2 = "Ce document contient aussi un test. Le mot test est fréquent."
+    keyword = "test"
 
     result = compare_documents(t1, t2, keyword)
-
-    print(generate_statistics_report(t1, t2, result))
+    print(format_keyword_search(keyword, result["keyword_search"]))
