@@ -1,4 +1,5 @@
 import os
+import pdfplumber
 
 def file_exists(filepath: str) -> bool:
     """
@@ -26,7 +27,6 @@ def read_txt_file(filepath: str) -> str:
         return None
 
 def read_pdf_file(filepath: str) -> str:
-    import pdfplumber
     """
     Extrait le texte d'un fichier PDF.
     
@@ -45,7 +45,21 @@ def read_pdf_file(filepath: str) -> str:
         print(f"Erreur lors de la lecture du fichier : {e}")
         return None
     
+
+ 
+# def read_txt_file(filepath: str) -> str:
+#     with open(filepath, 'r', encoding='utf-8') as f:
+#         return f.read()
     
+# def read_pdf_file(filepath: str)  -> str:
+#     import pypdf2
+#     with open(filepath, 'rb') as f:
+#         reader = pypdf2.pdfreader(f)
+#         content = ''
+#         for page in reader.pages:
+#             content += page.extract_text() or ''
+#             return content
+
 def parse_file(filepath: str) -> str:
     """
     Détecte l'extension du fichier et appelle la fonction appropriée de lecture
@@ -56,12 +70,37 @@ def parse_file(filepath: str) -> str:
     :return: Contenu du fichier sous forme de chaîne, 
     ou None en cas d'erreur ou si le format n'est pas supporté.
     """
-    #TODO: Implémenter la détection de l'extension du fichier et 
-    # appeler la fonction de lecture appropriée
+    try:
+        if not os.path.isfile(filepath):
+            return None
+        
+        _, extension = os.path.splitext(filepath)
+        extension = extension.lower()
+
+        if extension == '.txt':
+            return read_txt_file(filepath)
+        elif extension == '.pdf':
+            return read_pdf_file(filepath)
+        else:
+            return None 
+    
+    except Exception as e:
+        print(f"Erreur dans parse_file : {e}")
+        return None 
+    
+    
+
     
 if __name__ == "__main__":
-    chemin1 = "exemple.txt"
-    chemin2 = "fichier_inexistant.pdf"
+    chemin = "exemple.txt"
+    contenu = parse_file(chemin)
+
+    print(f"contenu extrait de {chemin}:\n")
+    print(contenu)
+
+    chemin2 = "exemple.pdf"
+    contenu2 = parse_file(chemin2)
+    print(f"\ncontenu extrait de {chemin2}:\n")
+    print(contenu2)
+
     
-    print(file_exists(chemin1))
-    print(file_exists(chemin2))
