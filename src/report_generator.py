@@ -166,13 +166,20 @@ def generate_report(comparison_results: dict) -> str:
     lines.append("==== Fin du rapport ====\n")
     return "\n".join(lines)
 
+def export_report_to_file(report_text: str, file_path: str = "rapport_comparaison.txt") -> None:
+    """
+    Enregistre le rapport de comparaison dans un fichier texte.
+
+    :param report_text: Rapport généré sous forme de texte (via generate_report).
+    :param file_path: Chemin du fichier de sortie (par défaut : 'rapport_comparaison.txt').
+    """
+    try:
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(report_text)
+        print(f"✅ Rapport exporté avec succès dans '{file_path}'")
+    except Exception as e:
+        print(f"❌ Erreur lors de l'export du rapport : {e}")
+
 
 if __name__ == "__main__":
-    from comparison_engine import compare_documents
-
-    t1 = "Bonjour à tous. Voici un test de mot-clé. Test encore une fois."
-    t2 = "Ce document contient aussi un test. Le mot test est fréquent."
-    keyword = "test"
-
-    result = compare_documents(t1, t2, keyword)
-    print(format_keyword_search(keyword, result["keyword_search"]))
+    print("Ce module est destiné à être importé et utilisé dans d'autres scripts.")
