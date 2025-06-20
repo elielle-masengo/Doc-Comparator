@@ -1,4 +1,6 @@
-def show_menu() -> None:
+from cli_interface.doc_comparison_menu import doc_comparison_menu
+
+def show_main_menu() -> None:
     print("="*80)
     print(' '*30 + "DOCUMENT COMPARATOR" + ' '*30)
     print("="*80)
@@ -10,31 +12,30 @@ def show_menu() -> None:
     print(" "*4 + "[1] Comparaison des Documents")
     print(" "*4 + "[2] Quitter")
 
-def ask_choice(possible_choices: set) -> int:
+def ask_choice(possible_choices: set[int]) -> int:
     choice = None
-    
     while choice not in possible_choices:
         try:
-            choice = int(input("Entrez votre choix (1 ou 2): "))
+            choice = int(input("Entrez votre choix : "))
         except ValueError:
             choice = None
-        print("Saisie incorrecte!")
-
+        if choice not in possible_choices:
+            print("Saisie incorrecte !\n")
     return choice
 
 def main() -> None:
-    show_menu()
-    print()
+    while True:
+        show_main_menu()
+        print()
+        choice = ask_choice({1, 2})
 
-    possible_choices = set([1, 2])
+        match choice:
+            case 1:
+                doc_comparison_menu()
+            case 2:
+                print("\nMerci d’avoir utilisé le comparateur de documents. À bientôt !\n")
+                break
 
-    choice = ask_choice(possible_choices)
-
-    match choice:
-        case 1:
-            print(">> Comparaison des documents à venir...")
-        case 2:
-            print("Au revoir !")
 
 if __name__ == "__main__":
     main()
