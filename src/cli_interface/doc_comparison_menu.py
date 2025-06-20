@@ -1,3 +1,5 @@
+from file_selection import file_selection_menu
+
 def show_menu() -> None:
     """
     Affiche le menu de la comparaison des documents.
@@ -24,8 +26,8 @@ def take_input(possible_choices: set[int]) -> int:
             choice = int(input("Entrez votre choix (0 à 3): "))
         except ValueError:
             choice = None
-
-        print(("Saisie invalide, entrez un nombre compris entre 0 et 3"))
+        if choice not in possible_choices:
+            print(("Saisie invalide, entrez un nombre compris entre 0 et 3"))
 
     return choice
 
@@ -42,13 +44,13 @@ def doc_comparison_menu() -> None :
 
     match choice:
         case 1:
-            print("<< Comparaison .txt sélectionnée >>")
+            file_selection_menu()
         case 2:
-            print("<< Comparaison .pdf sélectionnée >>")
+            file_selection_menu()
         case 3:
-            print("<< Comparaison mixte sélectionnée >>")
+            file_selection_menu()
         case 0:
-            print("<< Retour au menu principal >>")
+            print("Retour au menu principal")
             
 if __name__ == "__main__":
     doc_comparison_menu()
